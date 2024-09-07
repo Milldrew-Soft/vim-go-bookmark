@@ -1,0 +1,8 @@
+/doc/tags
+/misc
+/test/*.actual
+*.log
+
+*node_modules*
+*.env
+*.swp
