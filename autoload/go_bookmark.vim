@@ -7,14 +7,13 @@ function! go_bookmark#SetBookMark(char, selectedBookmarksFilePath) abort
   redraw |echo 'Notes for bookmark ' . a:char . ': ' . l:bookmarkNotes
   let l:bookMarkInfo = { 'filePathLineColumn': l:filePathLineColumn, 'notes': l:bookmarkNotes }
    let l:bookmarks[a:char] = l:bookMarkInfo
-  echo 'Bookmarks: ' . string(l:bookmarks)
-  call go_bookmark#HandleWriteBookmarksJsonFile(l:bookmarks)
-  call go_bookmark#PrintFormattedBookmarks()
+  call HandleWriteBookmarksJsonFile(l:bookmarks, a:selectedBookmarksFilePath)
+  call go_bookmark#printFormattedBookmarks(a:selectedBookmarksFilePath)
 
 endfunction
 
-function! SetBookMark(char) abort
-  let l:bookmarks = HandleGetGoBookmarksJsonFile()
+function! SetBookMark(char, bookmarksFilePath) abort
+  let l:bookmarks = HandleGetGoBookmarksJsonFile(a:bookmarksFilePath)
   let l:filePathLineColumn = expand('%:p') . ':' . line('.') . ':' . col('.')
   let l:bookmarkNotes = input('Enter notes for bookmark ' . a:char . ': ')
   " clear
@@ -23,7 +22,7 @@ function! SetBookMark(char) abort
    let l:bookmarks[a:char] = l:bookMarkInfo
   echo 'Bookmarks: ' . string(l:bookmarks)
   call HandleWriteBookmarksJsonFile(l:bookmarks)
-  call PrintFormattedBookmarks()
+  call go_bookmark#printFormattedBookmarks()
 endfunction
 
 function! go_bookmark#printFormattedBookmarks(bookmarksFilePath)
@@ -33,8 +32,6 @@ function! go_bookmark#printFormattedBookmarks(bookmarksFilePath)
   endfor
 endfunction
 
-command! -nargs=0 GoBookmarks :call PrintFormattedBookmarks()
-command! GoBookmarksEdit :exec ':edit ' . s:bookmarksJsonFile
 function! HandleGetGoBookmarksJsonFile(bookmarksFilePath)
   let l:hasBookmarksFile = filereadable(a:bookmarksFilePath)
   if l:hasBookmarksFile
@@ -57,14 +54,14 @@ function! HandleGetGoBookmarksJsonFile(bookmarksFilePath)
   endif
   return l:bookmarks
 endfunction
-function! HandleWriteBookmarksJsonFile(bookmarks)
+function! HandleWriteBookmarksJsonFile(bookmarks, bookmarksFilePath)
   let l:bookmarksJson = json_encode(a:bookmarks)
-  call writefile([l:bookmarksJson], s:bookmarksJsonFile)
+  call writefile([l:bookmarksJson], a:bookmarksFilePath)
 endfunction
 
-function! GoToBookMark(char)
+function! go_bookmark#GoToBookMark(char, bookmarksFilePath) abort
   echo 'Going to bookmark ' . a:char
-  let l:bookmarks = HandleGetGoBookmarksJsonFile()
+  let l:bookmarks = HandleGetGoBookmarksJsonFile(a:bookmarksFilePath)
   let l:bookmark = l:bookmarks[a:char]
   if !empty(l:bookmark)
     let l:filePathLineColumn = l:bookmark['filePathLineColumn']

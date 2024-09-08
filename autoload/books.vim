@@ -27,6 +27,11 @@ function! books#listBooks()
     echo book . ' - ' . books[book]
   endfor
 endfunction
+function books#addBookWithNotePrompt(book)
+  let bookNote = input('Enter note for ' . a:book . ': ')
+  call books#addBook(a:book, bookNote)
+endfunction
+
 function! books#addBook(book, bookNote)
   echo "Add book"
   let books = GetBooks()
@@ -45,11 +50,13 @@ function! books#deleteBook(book)
     echo "Book " . a:book . " does not exist"
     return
   endif
-  call remove(s:booksDirectory . '/' . a:book . '.book.json')
-  call remove(s:booksDirectory . '/' . a:book . '.book.json.broken')
+  ''
+  call delete(s:booksDirectory . '/' . a:book . '.book.json')
+  call delete(s:booksDirectory . '/' . a:book . '.book.json.broken')
   " remove key value from books.json
   call remove(books, a:book)
   call WriteBooks(books)
+  echo "Deleted book: " . a:book
 endfunction
 
 function! GetBooks()
@@ -75,7 +82,7 @@ endfunction
 function! AddBookJsonFile(book)
   let newBookJsonFile = books#getBookFilePath(a:book)
   if !filereadable(expand(newBookJsonFile))
-    call writefile(['{}'], expand('~/' . newBookJsonFile))
+    call writefile(['{}'], newBookJsonFile)
     echo "Created " . newBookJsonFile
   else
     echo newBookJsonFile . " already exists"
