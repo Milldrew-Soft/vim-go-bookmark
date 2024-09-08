@@ -1,4 +1,3 @@
-  let s:bookmarksJsonFile = expand('~/.go-bookmarks.json')
 function! SetBookMark(char) abort
   let l:bookmarks = HandleGetGoBookmarksJsonFile()
   let l:filePathLineColumn = expand('%:p') . ':' . line('.') . ':' . col('.')
@@ -51,13 +50,6 @@ function! HandleWriteBookmarksJsonFile(bookmarks)
   call writefile([l:bookmarksJson], s:bookmarksJsonFile)
 endfunction
 
-for char in range(char2nr('a'), char2nr('z'))
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
-endfor
-
-for char in range(char2nr('A'), char2nr('Z'))
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
-endfor
 function! GoToBookMark(char)
   echo 'Going to bookmark ' . a:char
   let l:bookmarks = HandleGetGoBookmarksJsonFile()
@@ -73,12 +65,5 @@ function! GoToBookMark(char)
     echo 'No bookmark found for ' . a:char
   endif
 endfunction
-for char in range(char2nr('a'), char2nr('z'))
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-endfor
-
-for char in range(char2nr('A'), char2nr('Z'))
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-endfor
 
 
