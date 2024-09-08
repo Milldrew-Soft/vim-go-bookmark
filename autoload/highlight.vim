@@ -1,7 +1,7 @@
 
 
 
-highlight BookMarkedLine cterm=NONE ctermbg=yellow ctermfg=black guibg=yellow guifg=black
+highlight BookMarkedLine cterm=NONE ctermbg=white ctermfg=black guibg=white guifg=black
 
 function! highlight#AddSignToLine(mark) abort
   call highlight#RemoveSignAndHighlight(a:mark)
