@@ -1,3 +1,18 @@
+
+function! go_bookmark#SetBookMark(char, selectedBookmarksFilePath) abort
+  let l:bookmarks = HandleGetGoBookmarksJsonFile(a:selectedBookmarksFilePath)
+  let l:filePathLineColumn = expand('%:p') . ':' . line('.') . ':' . col('.')
+  let l:bookmarkNotes = input('Enter notes for bookmark ' . a:char . ': ')
+  " clear
+  redraw |echo 'Notes for bookmark ' . a:char . ': ' . l:bookmarkNotes
+  let l:bookMarkInfo = { 'filePathLineColumn': l:filePathLineColumn, 'notes': l:bookmarkNotes }
+   let l:bookmarks[a:char] = l:bookMarkInfo
+  echo 'Bookmarks: ' . string(l:bookmarks)
+  call go_bookmark#HandleWriteBookmarksJsonFile(l:bookmarks)
+  call go_bookmark#PrintFormattedBookmarks()
+
+endfunction
+
 function! SetBookMark(char) abort
   let l:bookmarks = HandleGetGoBookmarksJsonFile()
   let l:filePathLineColumn = expand('%:p') . ':' . line('.') . ':' . col('.')
@@ -11,8 +26,8 @@ function! SetBookMark(char) abort
   call PrintFormattedBookmarks()
 endfunction
 
-function! PrintFormattedBookmarks()
-  let l:bookmarks = HandleGetGoBookmarksJsonFile()
+function! go_bookmark#printFormattedBookmarks(bookmarksFilePath)
+  let l:bookmarks = HandleGetGoBookmarksJsonFile(a:bookmarksFilePath)
   for [key, value] in items(l:bookmarks)
     echo 'Bookmark ' . key . ': ' . value['filePathLineColumn'] . ' - ' . value['notes']
   endfor
@@ -20,11 +35,10 @@ endfunction
 
 command! -nargs=0 GoBookmarks :call PrintFormattedBookmarks()
 command! GoBookmarksEdit :exec ':edit ' . s:bookmarksJsonFile
-function! HandleGetGoBookmarksJsonFile()
-  let l:hasBookmarksFile = filereadable(s:bookmarksJsonFile)
-  
+function! HandleGetGoBookmarksJsonFile(bookmarksFilePath)
+  let l:hasBookmarksFile = filereadable(a:bookmarksFilePath)
   if l:hasBookmarksFile
-    let l:bookmarksJson = readfile(s:bookmarksJsonFile)
+    let l:bookmarksJson = readfile(a:bookmarksFilePath)
     :try
     let l:bookmarks = json_decode(join(l:bookmarksJson, ''))
   catch 
@@ -37,12 +51,10 @@ function! HandleGetGoBookmarksJsonFile()
   finally
     endtry
   else
-    echo 'No bookmarks file found at ' . s:bookmarksJsonFile . '. Creating new file.'
-    call writefile(['{}'], s:bookmarksJsonFile)
+    echo 'No bookmarks file found at ' . a:bookmarksFilePath
+    call writefile(['{}'], a:bookmarksFilePath)
     let l:bookmarks = {}
   endif
-
-
   return l:bookmarks
 endfunction
 function! HandleWriteBookmarksJsonFile(bookmarks)
