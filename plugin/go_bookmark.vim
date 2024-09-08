@@ -1,14 +1,19 @@
-let s:selectedBook = 'default'
+let s:selectedBook = '0'
 echo 'GoBookmarks setting ' . s:selectedBook . ' as the selected book'
 " create  ~/.go-bookmark/books.json if it does not exist
 call books#init()
 
-" create the default book named ~/.go-bookmarks/default.book.json
-call books#addBook(s:selectedBook, 'the default book')
+" create the default books 0-9
+"
+for i in range(0, 9)
+  let bookname = 'book' . i
+  call books#addBook(i, '')
+endfor
 
-function! SetSelectedBook(bookname)
+function! SetSelectedBook(bookname) abort
   let doesBookExist = books#doesBookExist(a:bookname)
   if doesBookExist
+    echo "Setting selected book to " a:bookname
     let s:selectedBook = a:bookname
   else
     echo "Book" a:bookname "does not exist"
@@ -22,6 +27,7 @@ call go_bookmark#printFormattedBookmarks(GetSelectedBookFilePath())
 function! SetBookMark(char) abort
   echo 'Setting bookmark ' . a:char . ' in ' . GetSelectedBookFilePath()
   call go_bookmark#SetBookMark(a:char, GetSelectedBookFilePath())
+  call highlight#AddSignToLine(a:char)
 endfunction
 
 
@@ -46,32 +52,6 @@ function! GoBookmarksList()
 endfunction
 
 
-" ────────────────────────────────────────────────────────────────────────────
-" ────────────────────────────────────────────────────────────────────────────
-" ────────────────────────────────────────────────────────────────────────────
-" ────────────────────────────────────────────────────────────────────────────
-" ────────────────────────────────────────────────────────────────────────────
-" create all bookmark keystrokes ─────────────────────────────────────────────
-for char in range(char2nr('a'), char2nr('z'))
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
-endfor
-
-for char in range(char2nr('A'), char2nr('Z'))
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
-endfor
-for char in range(0, 9)
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
-endfor
-for char in range(char2nr('a'), char2nr('z'))
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-endfor
-
-for char in range(char2nr('A'), char2nr('Z'))
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-endfor
-for char in range(0, 9)
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-endfor
 "COMMANDS ────────────────────────────────────────────
 "COMMANDS ────────────────────────────────────────────
 "COMMANDS ────────────────────────────────────────────
@@ -82,7 +62,6 @@ command! -nargs=1 GoBookAdd call books#addBookWithNotePrompt(<f-args>)
 " When GoBookDelete <bookname> is called, delete the book named <bookname>.book.json
 command! -nargs=1 GoBookDelete call books#deleteBook(<f-args>)
 
-
 " When GoBookList is called, list all the books
 command! GoBookList call books#listBooks()
 
@@ -92,4 +71,52 @@ command! -nargs=1 GoBookSelect call SetSelectedBook(<f-args>)
 
 " When GoBookmarksList is called, list all the bookmarks in the selected book
 command! GoBookmarksList call GoBookmarksList()
+
+
+" MAPPINGS ─────────────────────────────────────────────────────────────────────
+" ────────────────────────────────────────────────────────────────────────────
+" ────────────────────────────────────────────────────────────────────────────
+" ────────────────────────────────────────────────────────────────────────────
+" ────────────────────────────────────────────────────────────────────────────
+" ────────────────────────────────────────────────────────────────────────────
+" create all bookmark keystrokes ─────────────────────────────────────────────
+
+" gbbl list all bookmarks in the selected book
+nnoremap gbbL :call GoBookmarksList()<CR>
+" gbbE<char> edit the bookmark of the selected book
+" 0-9 loop
+for char in range(0, 9)
+  let acutalChar = char
+  execute 'nnoremap gbbs'.acutalChar.' :call SetSelectedBook("'.acutalChar.'")<CR>'
+  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
+  " edit the bookmark of the selected book
+  execute 'nnoremap gbbE'.char.' :call go_bookmark#EditBookMarkNote("'.char.'","' . GetSelectedBookFilePath() . '")<CR>'
+  " delete the bookmark of the selected book"
+  " execute 'nnoremap gbbD'.char.' :call go_bookmark#DeleteBookMark("'.char.'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gbbD'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+
+endfor
+
+" a-z loop
+for char in range(char2nr('a'), char2nr('z'))
+  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gbbE'.nr2char(char).' :call go_bookmark#EditBookMarkNote("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gbbD'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  if char == char2nr('b')
+    continue
+  endif
+  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
+endfor
+" A-Z loop
+for char in range(char2nr('A'), char2nr('Z'))
+  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gbbE'.nr2char(char).' :call go_bookmark#EditBookMarkNote("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gbbD'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+endfor
+nnoremap gbb :echo 'go bookmark keystroke timeout or fall through'<CR>
+
+
+
 

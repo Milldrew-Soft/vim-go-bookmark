@@ -33,10 +33,8 @@ function books#addBookWithNotePrompt(book)
 endfunction
 
 function! books#addBook(book, bookNote)
-  echo "Add book"
   let books = GetBooks()
   if has_key(books, a:book)
-    echo "Book " . a:book . " already exists"
     return
   endif
   let books[a:book] = a:bookNote
@@ -83,9 +81,7 @@ function! AddBookJsonFile(book)
   let newBookJsonFile = books#getBookFilePath(a:book)
   if !filereadable(expand(newBookJsonFile))
     call writefile(['{}'], newBookJsonFile)
-    echo "Created " . newBookJsonFile
   else
-    echo newBookJsonFile . " already exists"
   endif
 endfunction
 
