@@ -1,6 +1,7 @@
 let s:booksDirectory = expand('~/.go-bookmark')
 let s:booksJsonFile = s:booksDirectory . '/books.json'
 
+
 function CreateBooksDirectory()
   if !isdirectory(s:booksDirectory)
     call mkdir(s:booksDirectory)
@@ -42,6 +43,28 @@ function! books#addBook(book, bookNote)
   call AddBookJsonFile(a:book)
 endfunction
 
+function! books#chooseDefaultBook()
+  let books = GetBooks()
+  call books#listBooks()
+  let book = input('Set your default book (0-9): ')
+
+  let books['defaultBook'] = book
+
+
+  call writefile([json_encode(books)], s:booksJsonFile)
+  echo "Default book set to " . book
+  call books#listBooks()
+endfunction
+
+function books#getDefaultBook()
+  let books = GetBooks()
+  if has_key(books, 'defaultBook')
+    return books['defaultBook']
+  else
+    return ''
+  endif
+
+endfunction
 function! books#deleteBook(book) 
   let books = GetBooks()
   if !has_key(books, a:book)

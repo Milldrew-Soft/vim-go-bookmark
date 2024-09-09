@@ -1,7 +1,4 @@
-let g:goBookmarkSelectedBook = '0'
-nnoremap gbbs :echo GetSelectedBookFilePath()<CR>
-nnoremap gbbd: call books#chooseDefaultBook()<CR>
-echo 'GoBookmarks setting ' . g:goBookmarkSelectedBook . ' as the selected book'
+nnoremap gbbs :call books#chooseDefaultBook()<CR>
 " create  ~/.go-bookmark/books.json if it does not exist
 call books#init()
 
@@ -12,6 +9,8 @@ for i in range(0, 9)
   call books#addBook(i, '')
 endfor
 call books#addBook('defaultBook', '0')
+let g:goBookmarkSelectedBook =  books#getDefaultBook()
+echo 'GoBookmarks setting ' . g:goBookmarkSelectedBook . ' as the selected book'
 
 function! SetSelectedBook(bookname) abort
   let doesBookExist = books#doesBookExist(a:bookname)
@@ -124,7 +123,7 @@ nnoremap gbb :echo 'go bookmark keystroke timeout or fall through'<CR>
 nnoremap gbbS :echo 'select book timeout fall through'<CR>
 nnoremap gbbL :call books#listBooks()<CR>
 nnoremap gbbE :call books#editNote(g:goBookmarkSelectedBook)<CR>
-nnoreamp gbbd :echo 'delete bookmark fall through timeout'<CR>
+nnoremap gbbd :echo 'delete bookmark fall through timeout'<CR>
 
 "─────────────────── HIGH LIGHT BOOKMARKED LINES WHEN FILE IS OPENED ───────────────────
   augroup
