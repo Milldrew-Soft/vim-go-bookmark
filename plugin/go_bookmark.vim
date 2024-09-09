@@ -1,4 +1,15 @@
-nnoremap gbbs :call books#chooseDefaultBook()<CR>
+   augroup my_netrw_mappings
+     autocmd!
+     " Target netrw filetype specifically
+     autocmd FileType netrw call UnmapNetrwDefaultMappings()
+   augroup END
+
+   function! UnmapNetrwDefaultMappings()
+     if hasmapto('<Plug>NetrwBookHistHandler_gb')
+       nunmap <buffer> gb
+     endif
+   endfunction
+
 " create  ~/.go-bookmark/books.json if it does not exist
 call books#init()
 
@@ -84,7 +95,6 @@ command! GoBookmarksList call GoBookmarksList()
 " create all bookmark keystrokes ─────────────────────────────────────────────
 
 " gbbl list all bookmarks in the selected book
-nnoremap gbbl :call GoBookmarksList()<CR>
 " gbbE<char> edit the bookmark of the selected book
 
 " 0-9 loop
@@ -119,11 +129,15 @@ for char in range(char2nr('A'), char2nr('Z'))
   execute 'nnoremap gbbd'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
 endfor
 
-nnoremap gbb :echo 'go bookmark keystroke timeout or fall through'<CR>
+nnoremap gb :echo 'going to bookmark timed out'<CR>
+nnoremap gbb :echo 'a custom go bookmark keystroke timeout or fall through'<CR>
 nnoremap gbbS :echo 'select book timeout fall through'<CR>
 nnoremap gbbL :call books#listBooks()<CR>
 nnoremap gbbE :call books#editNote(g:goBookmarkSelectedBook)<CR>
 nnoremap gbbd :echo 'delete bookmark fall through timeout'<CR>
+nnoremap gbbs :call books#chooseDefaultBook()<CR>
+autocmd! FileType netrw books#chooseDefaultBook()
+nnoremap gbbl :call GoBookmarksList()<CR>
 
 "─────────────────── HIGH LIGHT BOOKMARKED LINES WHEN FILE IS OPENED ───────────────────
   augroup
