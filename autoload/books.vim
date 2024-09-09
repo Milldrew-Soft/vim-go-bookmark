@@ -85,6 +85,18 @@ function! AddBookJsonFile(book)
   endif
 endfunction
 
+function! books#editNote(book)
+  let books = GetBooks()
+  if !has_key(books, a:book)
+    echo "Book " . a:book . " does not exist"
+    return
+  endif
+  let bookNote = input('Enter new note for ' . a:book . ': ')
+  let books[a:book] = bookNote
+  call WriteBooks(books)
+  call books#listBooks()
+endfunction
+
 function! books#getBookFilePath(book)
   return s:booksDirectory . '/' . a:book . '.book.json'
 endfunction

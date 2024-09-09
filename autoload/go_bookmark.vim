@@ -9,7 +9,6 @@ function! go_bookmark#SetBookMark(char, selectedBookmarksFilePath) abort
    let l:bookmarks[a:char] = l:bookMarkInfo
   call HandleWriteBookmarksJsonFile(l:bookmarks, a:selectedBookmarksFilePath)
   call go_bookmark#printFormattedBookmarks(a:selectedBookmarksFilePath)
-
 endfunction
 
 function! SetBookMark(char, bookmarksFilePath) abort
@@ -27,11 +26,12 @@ endfunction
 function! FormatString(str)
   let l:len = strlen(a:str)
   " If the string is longer than 20 characters, truncate and add "..."
-  if l:len > 20
-    return strpart(a:str, 0, 16) . "..."
+  if l:len > 30
+    let start = l:len - 28
+    return '...' . strpart(a:str, start) 
   else
     " Calculate padding needed to center the text
-    let l:padding = (20 - l:len) / 2
+    let l:padding = (30 - l:len) / 2
     let l:left_padding = repeat(' ', l:padding)
     let l:right_padding = repeat(' ', l:padding)
     " return l:left_padding . a:str . l:right_padding

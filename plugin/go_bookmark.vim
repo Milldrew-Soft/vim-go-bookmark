@@ -1,5 +1,6 @@
-let s:selectedBook = '0'
-echo 'GoBookmarks setting ' . s:selectedBook . ' as the selected book'
+let g:goBookmarkSelectedBook = '0'
+nnoremap gbbs :echo GetSelectedBookFilePath()<CR>
+echo 'GoBookmarks setting ' . g:goBookmarkSelectedBook . ' as the selected book'
 " create  ~/.go-bookmark/books.json if it does not exist
 call books#init()
 
@@ -14,7 +15,7 @@ function! SetSelectedBook(bookname) abort
   let doesBookExist = books#doesBookExist(a:bookname)
   if doesBookExist
     echo "Setting selected book to " a:bookname
-    let s:selectedBook = a:bookname
+    let g:goBookmarkSelectedBook = a:bookname
   else
     echo "Book" a:bookname "does not exist"
   endif
@@ -39,7 +40,7 @@ function! GoToBookMark(char)
 endfunction
 
 function! GetSelectedBookFilePath()
-  return books#getBookFilePath(s:selectedBook)
+  return books#getBookFilePath(g:goBookmarkSelectedBook)
 endfunction
 
 " GoBookmarksList lists all the bookmarks in the selected book
@@ -47,7 +48,7 @@ endfunction
 "
 "
 function! GoBookmarksList()
-  echo 'Listing bookmarks in book: ' . s:selectedBook
+  echo 'Listing bookmarks in book: ' . g:goBookmarkSelectedBook
   call go_bookmark#printFormattedBookmarks(GetSelectedBookFilePath())
 endfunction
 
@@ -82,40 +83,51 @@ command! GoBookmarksList call GoBookmarksList()
 " create all bookmark keystrokes ─────────────────────────────────────────────
 
 " gbbl list all bookmarks in the selected book
-nnoremap gbbL :call GoBookmarksList()<CR>
+nnoremap gbbl :call GoBookmarksList()<CR>
 " gbbE<char> edit the bookmark of the selected book
+
 " 0-9 loop
 for char in range(0, 9)
   let acutalChar = char
-  execute 'nnoremap gbbs'.acutalChar.' :call SetSelectedBook("'.acutalChar.'")<CR>'
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gbbS'.acutalChar.' :call SetSelectedBook("'.acutalChar.'")<CR>'
+  execute 'nnoremap gb'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gB'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
   " edit the bookmark of the selected book
-  execute 'nnoremap gbbE'.char.' :call go_bookmark#EditBookMarkNote("'.char.'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gbbe'.char.' :call go_bookmark#EditBookMarkNote("'.char.'","' . GetSelectedBookFilePath() . '")<CR>'
   " delete the bookmark of the selected book"
-  " execute 'nnoremap gbbD'.char.' :call go_bookmark#DeleteBookMark("'.char.'","' . GetSelectedBookFilePath() . '")<CR>'
-  execute 'nnoremap gbbD'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  " execute 'nnoremap gbbd'.char.' :call go_bookmark#DeleteBookMark("'.char.'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gbbd'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
 
 endfor
 
 " a-z loop
 for char in range(char2nr('a'), char2nr('z'))
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-  execute 'nnoremap gbbE'.nr2char(char).' :call go_bookmark#EditBookMarkNote("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
-  execute 'nnoremap gbbD'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gb'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gbbe'.nr2char(char).' :call go_bookmark#EditBookMarkNote("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gbbd'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
   if char == char2nr('b')
     continue
   endif
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gB'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
 endfor
 " A-Z loop
 for char in range(char2nr('A'), char2nr('Z'))
-  execute 'nnoremap gb'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
-  execute 'nnoremap gB'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-  execute 'nnoremap gbbE'.nr2char(char).' :call go_bookmark#EditBookMarkNote("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
-  execute 'nnoremap gbbD'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gB'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gb'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gbbe'.nr2char(char).' :call go_bookmark#EditBookMarkNote("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
+  execute 'nnoremap gbbd'.nr2char(char).' :call go_bookmark#DeleteBookMark("'.nr2char(char).'","' . GetSelectedBookFilePath() . '")<CR>'
 endfor
+
 nnoremap gbb :echo 'go bookmark keystroke timeout or fall through'<CR>
+nnoremap gbbS :echo 'select book timeout fall through'<CR>
+nnoremap gbbL :call books#listBooks()<CR>
+nnoremap gbbE :call books#editNote(g:goBookmarkSelectedBook)<CR>
+
+"─────────────────── HIGH LIGHT BOOKMARKED LINES WHEN FILE IS OPENED ───────────────────
+  augroup
+    autocmd!
+    autocmd BufEnter * call highlight#AddHighlightToExistingBookmarks(GetSelectedBookFilePath())
+  augroup END
 
 
 
