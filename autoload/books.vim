@@ -43,7 +43,7 @@ function! books#addBook(book, bookNote)
   call AddBookJsonFile(a:book)
 endfunction
 
-function! books#chooseDefaultBook()
+function! books#hooseDefaultBook()
   let books = GetBooks()
   call books#listBooks()
   let book = input('Set your default book (0-9): ')
