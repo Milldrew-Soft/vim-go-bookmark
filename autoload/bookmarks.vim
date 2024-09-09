@@ -1,5 +1,5 @@
 
-function! go_bookmark#SetBookMark(char, selectedBookmarksFilePath) abort
+function! bookmarks#SetBookMark(char, selectedBookmarksFilePath) abort
   let l:bookmarks = HandleGetGoBookmarksJsonFile(a:selectedBookmarksFilePath)
   let l:filePathLineColumn = expand('%:p') . ':' . line('.') . ':' . col('.')
   let l:bookmarkNotes = input('Enter notes for bookmark ' . a:char . ': ')
@@ -8,7 +8,7 @@ function! go_bookmark#SetBookMark(char, selectedBookmarksFilePath) abort
   let l:bookMarkInfo = { 'filePathLineColumn': l:filePathLineColumn, 'notes': l:bookmarkNotes }
    let l:bookmarks[a:char] = l:bookMarkInfo
   call HandleWriteBookmarksJsonFile(l:bookmarks, a:selectedBookmarksFilePath)
-  call go_bookmark#printFormattedBookmarks(a:selectedBookmarksFilePath)
+  call bookmarks#printFormattedBookmarks(a:selectedBookmarksFilePath)
 endfunction
 
 function! SetBookMark(char, bookmarksFilePath) abort
@@ -21,25 +21,22 @@ function! SetBookMark(char, bookmarksFilePath) abort
    let l:bookmarks[a:char] = l:bookMarkInfo
   echo 'Bookmarks: ' . string(l:bookmarks)
   call HandleWriteBookmarksJsonFile(l:bookmarks)
-  call go_bookmark#printFormattedBookmarks()
+  call bookmarks#printFormattedBookmarks()
 endfunction
 function! FormatString(str)
   let l:len = strlen(a:str)
   " If the string is longer than 20 characters, truncate and add "..."
-  if l:len > 30
+  if l:len > 28
     let start = l:len - 28
     return '...' . strpart(a:str, start) 
   else
     " Calculate padding needed to center the text
-    let l:padding = (30 - l:len) / 2
-    let l:left_padding = repeat(' ', l:padding)
-    let l:right_padding = repeat(' ', l:padding)
-    " return l:left_padding . a:str . l:right_padding
-    return a:str . l:right_padding . l:left_padding
+    let l:padding = (30 - l:len)
+    return a:str . repeat(' ', l:padding)
   endif
 endfunction
 
-function! go_bookmark#printFormattedBookmarks(bookmarksFilePath)
+function! bookmarks#printFormattedBookmarks(bookmarksFilePath)
   let l:bookmarks = HandleGetGoBookmarksJsonFile(a:bookmarksFilePath)
   let l:fileHeader = FormatString('File')
   echo 'Mark • '.l:fileHeader.' • Notes'
@@ -79,15 +76,21 @@ function! HandleWriteBookmarksJsonFile(bookmarks, bookmarksFilePath)
   call writefile([l:bookmarksJson], a:bookmarksFilePath)
 endfunction
 
-function! go_bookmark#GoToBookMark(char, bookmarksFilePath) abort
-  :write
+function! bookmarks#GoToBookMark(char, bookmarksFilePath) abort
+  try
+    :write
+  catch
+    endtry
   echo 'Going to bookmark ' . a:char
+  
   let l:bookmarks = HandleGetGoBookmarksJsonFile(a:bookmarksFilePath)
   let l:bookmark = l:bookmarks[a:char]
+  let l:bookmarkNotes = l:bookmark['notes']
   if !empty(l:bookmark)
     let l:filePathLineColumn = l:bookmark['filePathLineColumn']
     let [l:filePath, l:line, l:column] = split(l:filePathLineColumn, ':' )
     echo 'Opening ' . l:filePath . ' at line ' . l:line . ' and column ' . l:column
+    echo 'Notes: ' . l:bookmarkNotes
     execute 'edit ' . l:filePath
     execute l:line
     execute 'normal! ' . l:column . '|'
@@ -96,7 +99,7 @@ function! go_bookmark#GoToBookMark(char, bookmarksFilePath) abort
   endif
 endfunction
 
-function! go_bookmark#EditBookMarkNote(char, bookmarksFilePath) abort
+function! bookmarks#EditBookMarkNote(char, bookmarksFilePath) abort
   let l:bookmarks = HandleGetGoBookmarksJsonFile(a:bookmarksFilePath)
   let l:bookmark = l:bookmarks[a:char]
   if !empty(l:bookmark)
@@ -104,13 +107,13 @@ function! go_bookmark#EditBookMarkNote(char, bookmarksFilePath) abort
     let l:bookmark['notes'] = l:bookmarkNotes
     let l:bookmarks[a:char] = l:bookmark
     call HandleWriteBookmarksJsonFile(l:bookmarks, a:bookmarksFilePath)
-    call go_bookmark#printFormattedBookmarks(a:bookmarksFilePath)
+    call bookmarks#printFormattedBookmarks(a:bookmarksFilePath)
   else
     echo 'No bookmark found for ' . a:char
   endif
 endfunction
 
-function! go_bookmark#DeleteBookMark(char, bookmarksFilePath) abort
+function! bookmarks#DeleteBookMark(char, bookmarksFilePath) abort
   let l:bookmarks = HandleGetGoBookmarksJsonFile(a:bookmarksFilePath)
   let l:bookmark = l:bookmarks[a:char]
   if !empty(l:bookmark)
@@ -118,7 +121,7 @@ function! go_bookmark#DeleteBookMark(char, bookmarksFilePath) abort
     if l:bookmarkNotes == 'y'
       call remove(l:bookmarks, a:char)
       call HandleWriteBookmarksJsonFile(l:bookmarks, a:bookmarksFilePath)
-      call go_bookmark#printFormattedBookmarks(a:bookmarksFilePath)
+      call bookmarks#printFormattedBookmarks(a:bookmarksFilePath)
     else
       echo 'Bookmark ' . a:char . ' was not deleted'
     endif

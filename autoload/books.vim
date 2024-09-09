@@ -53,7 +53,6 @@ function! books#chooseDefaultBook()
 
   call writefile([json_encode(books)], s:booksJsonFile)
   echo "Default book set to " . book
-  call books#listBooks()
 endfunction
 
 function books#getDefaultBook()
@@ -108,6 +107,14 @@ function! AddBookJsonFile(book)
   endif
 endfunction
 
+function books#printBookNote(book)
+  let books = GetBooks()
+  if !has_key(books, a:book)
+    echo "Book " . a:book . " does not exist"
+    return
+  endif
+  echo "Note: " . books[a:book]
+endfunction
 function! books#editNote(book)
   let books = GetBooks()
   if !has_key(books, a:book)
