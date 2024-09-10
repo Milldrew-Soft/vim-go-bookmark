@@ -16,7 +16,7 @@ function! SetBookMark(char, bookmarksFilePath) abort
   let l:filePathLineColumn = expand('%:p') . ':' . line('.') . ':' . col('.')
   let l:bookmarkNotes = input('Enter notes for bookmark ' . a:char . ': ')
   " clear
-  redraw |echo 'Notes for bookmark ' . a:char . ': ' . l:bookmarkNotes
+  redraw | echo 'Notes for bookmark ' . a:char . ': ' . l:bookmarkNotes
   let l:bookMarkInfo = { 'filePathLineColumn': l:filePathLineColumn, 'notes': l:bookmarkNotes }
    let l:bookmarks[a:char] = l:bookMarkInfo
   echo 'Bookmarks: ' . string(l:bookmarks)

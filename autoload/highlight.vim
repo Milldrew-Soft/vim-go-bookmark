@@ -35,6 +35,3 @@ function! highlight#AddHighlightToExistingBookmarks(currentBookmarksFilePath) ab
   endfor
 
 endfunction
-
-
-call highlight#AddSignToLine('A')

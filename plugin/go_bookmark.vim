@@ -21,25 +21,24 @@ for i in range(0, 9)
 endfor
 call books#addBook('defaultBook', '0')
 let g:goBookmarkSelectedBook =  books#getDefaultBook()
-echo 'GoBookmarks setting ' . g:goBookmarkSelectedBook . ' as the selected book'
 
 function! SetSelectedBook(bookname) abort
   let doesBookExist = books#doesBookExist(a:bookname)
   if doesBookExist
     let g:goBookmarkSelectedBook = a:bookname
-    echo "Setting selected book to " a:bookname
+    echom "Setting selected book to " a:bookname
     call books#printBookNote(a:bookname)
   else
-    echo "Book" a:bookname "does not exist"
+    echom "Book" a:bookname "does not exist"
   endif
 endfunction
 
 " When GoBookMarksList is called, list all the bookmarks in the selected book
-call bookmarks#printFormattedBookmarks(GetSelectedBookFilePath())
+" call bookmarks#printFormattedBookmarks(GetSelectedBookFilePath())
 
 " When gb<char> is called, bookmark the current location with the character <char>
 function! SetBookMark(char) abort
-  echo 'Setting bookmark ' . a:char . ' in ' . GetSelectedBookFilePath()
+  echom 'Setting bookmark ' . a:char . ' in ' . GetSelectedBookFilePath()
   call bookmarks#SetBookMark(a:char, GetSelectedBookFilePath())
   call highlight#AddSignToLine(a:char)
 endfunction
@@ -48,7 +47,7 @@ endfunction
 " vimscript algorithm -----
 " when gB<char> is called, go to the bookmarked location with the character <char>
 function! GoToBookMark(char)
-  echo 'Going to bookmark ' . a:char . ' in ' . GetSelectedBookFilePath()
+  echom 'Going to bookmark ' . a:char . ' in ' . GetSelectedBookFilePath()
   call bookmarks#GoToBookMark(a:char, GetSelectedBookFilePath())
 endfunction
 
@@ -61,7 +60,7 @@ endfunction
 "
 "
 function! GoBookmarksList()
-  echo 'Listing bookmarks in book: ' . g:goBookmarkSelectedBook
+  echom 'Listing bookmarks in book: ' . g:goBookmarkSelectedBook
   call bookmarks#printFormattedBookmarks(GetSelectedBookFilePath())
 endfunction
 
@@ -141,11 +140,10 @@ autocmd! FileType netrw books#chooseDefaultBook()
 nnoremap gbbl :call GoBookmarksList()<CR>
 
 "─────────────────── HIGH LIGHT BOOKMARKED LINES WHEN FILE IS OPENED ───────────────────
-  augroup
-    autocmd!
-    autocmd BufEnter * call highlight#AddHighlightToExistingBookmarks(GetSelectedBookFilePath())
-  augroup END
-
+augroup highlight_bookmarks
+    autocmd! BufEnter * call highlight#AddHighlightToExistingBookmarks(GetSelectedBookFilePath())
+  echo 'after augroup end'
+augroup END
 
 
 
