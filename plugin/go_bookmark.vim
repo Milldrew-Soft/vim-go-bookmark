@@ -36,6 +36,7 @@ function! SetSelectedBook(bookname) abort
     echom "Book" a:bookname "does not exist"
   endif
 endfunction
+call SetSelectedBook(g:goBookmarkSelectedBook)
 
 " When GoBookMarksList is called, list all the bookmarks in the selected book
 " call bookmarks#printFormattedBookmarks(GetSelectedBookFilePath())
@@ -52,7 +53,7 @@ endfunction
 " when gB<char> is called, go to the bookmarked location with the character <char>
 function! GoToBookMark(char)
   echom 'Going to bookmark ' . a:char . ' in ' . GetSelectedBookFilePath()
-  call bookmarks#GoToBookMark(a:char, GetSelectedBookFilePath())
+  call bookmarks#GoToBookmark(a:char )
 endfunction
 
 function! GetSelectedBookFilePath()

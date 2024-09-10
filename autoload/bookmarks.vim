@@ -64,7 +64,7 @@ function! HandleWriteBookmarksJsonFile(bookmarks, bookmarksFilePath)
   call writefile([l:bookmarksJson], a:bookmarksFilePath)
 endfunction
 
-function! bookmarks#GoToBookMark(char ) abort
+function! bookmarks#GoToBookmark(char ) abort
   try
     :write
   catch
