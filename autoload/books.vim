@@ -22,6 +22,12 @@ function! books#doesBookExist(book)
   return has_key(books, a:book)
 endfunction
 
+function! books#getSelectedBookFilePath()
+  let books = GetBooks()
+  let selectedBook = books['selectedBook']
+  return s:booksDirectory . '/' . selectedBook . '.book.json'
+endfunction
+
 function! books#listBooks()
   let books = GetBooks()
   for book in keys(books)
@@ -115,18 +121,23 @@ function books#printBookNote(book)
   endif
   echo "Note: " . books[a:book]
 endfunction
+
 function! books#editNote(book)
+  let bookNote = input('Enter new note for ' . a:book . ': ')
+  call books#editBook(a:book, bookNote)
+endfunction
+
+function! books#editBook(book, note) 
   let books = GetBooks()
   if !has_key(books, a:book)
     echo "Book " . a:book . " does not exist"
     return
   endif
-  let bookNote = input('Enter new note for ' . a:book . ': ')
-  let books[a:book] = bookNote
+  let books[a:book] = a:note
   call WriteBooks(books)
   call books#listBooks()
-endfunction
 
+endfunction
 function! books#getBookFilePath(book)
   return s:booksDirectory . '/' . a:book . '.book.json'
 endfunction
