@@ -1,5 +1,5 @@
+
    augroup my_netrw_mappings
-     autocmd!
      " Target netrw filetype specifically
      autocmd FileType netrw call UnmapNetrwDefaultMappings()
    augroup END
@@ -136,7 +136,6 @@ nnoremap gbbL :call books#listBooks()<CR>
 nnoremap gbbE :call books#editNote(g:goBookmarkSelectedBook)<CR>
 nnoremap gbbd :echo 'delete bookmark fall through timeout'<CR>
 nnoremap gbbs :call books#chooseDefaultBook()<CR>
-autocmd! FileType netrw books#chooseDefaultBook()
 nnoremap gbbl :call GoBookmarksList()<CR>
 
 "─────────────────── HIGH LIGHT BOOKMARKED LINES WHEN FILE IS OPENED ───────────────────
