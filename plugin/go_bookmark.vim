@@ -36,7 +36,8 @@ function! SetSelectedBook(bookname) abort
     echom "Book" a:bookname "does not exist"
   endif
 endfunction
-call SetSelectedBook(g:goBookmarkSelectedBook)
+silent! call SetSelectedBook(g:goBookmarkSelectedBook) 
+
 
 " When GoBookMarksList is called, list all the bookmarks in the selected book
 " call bookmarks#printFormattedBookmarks(GetSelectedBookFilePath())
