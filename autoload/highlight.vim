@@ -4,10 +4,19 @@
 highlight BookMarkedLine cterm=NONE ctermbg=white ctermfg=black guibg=white guifg=black
 
 function! highlight#AddSignToLineOnBufferOpen(mark, line) abort
-  call highlight#RemoveSignAndHighlight(a:mark)
+  " call highlight#RemoveSignAndHighlight(a:mark)
+  
   let l:signDef = a:mark . '-bookmark'
-    call sign_define(l:signDef, {'text': a:mark, 'texthl': 'BookMarkedLine' , 'linehl': 'BookMarkedLine'})
-    call sign_place(a:line, l:signDef, l:signDef, '', {'lnum': a:line})
+  let l:signDefConfig = {'text': a:mark, 'texthl': 'BookMarkedLine' , 'linehl': 'BookMarkedLine'}
+  "call sign_define(l:signDef, {'text': a:mark, 'texthl': 'BookMarkedLine' , 'linehl': 'BookMarkedLine'})
+  call sign_define(l:signDef, l:signDefConfig)
+  echo json_encode(l:signDefConfig)
+  let l:bufName = bufname()
+  echo l:bufName . 'bufName'
+ "call sign_place(0, l:signDef, l:signDef,''   , {'lnum': a:line})
+ "echo 'call sign_place(0,'.  l:signDef . ',' . l:signDef .', ' ."''" . "  , {'lnum':" .  a:line .'})'
+ call sign_place(0, l:signDef, l:signDef, l:bufName  , {'lnum': a:line})
+ echo 'call sign_place(0,'.  l:signDef . ',' . l:signDef .', '. l:bufName . "  , {'lnum':" .  a:line .'})'
 endfunction
 
 function! highlight#AddSignToLine(mark) abort
@@ -21,6 +30,9 @@ function! highlight#RemoveSignAndHighlight(mark) abort
 endfunction
 function! highlight#AddHighlightToExistingBookmarks(currentBookmarksFilePath) abort
   let l:currentFile = expand('%:p')
+  if &filetype ==# 'netrw'
+    let l:currentFile = getcwd() . '/'
+  endif
   let l:currentBookmarks = readfile(a:currentBookmarksFilePath)
   let l:currentBookmarksJson = json_decode(join(l:currentBookmarks, ''))
 
@@ -29,7 +41,6 @@ function! highlight#AddHighlightToExistingBookmarks(currentBookmarksFilePath) ab
     let filePathLineColumn = l:value['filePathLineColumn']
     let [filePath, line, column] = split(filePathLineColumn, ':')
     if filePath == l:currentFile
-      " call input('pause' .bookmark . ' ' . filePath . line . column)
       call highlight#AddSignToLineOnBufferOpen(bookmark, line)
     endif
   endfor

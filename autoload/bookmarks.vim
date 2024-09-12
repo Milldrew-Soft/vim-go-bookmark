@@ -1,11 +1,16 @@
 
 function! bookmarks#SetBookMark(char, selectedBookmarksFilePath) abort
   let l:bookmarks = HandleGetGoBookmarksJsonFile(a:selectedBookmarksFilePath)
-  let l:filePathLineColumn = expand('%:p') . ':' . line('.') . ':' . col('.')
-  let l:bookmarkNotes = input('Enter notes for bookmark ' . a:char . ': ')
+  let l:filePath = expand('%:p')
+  if &filetype ==# 'netrw'
+    let l:filePath = getcwd() . '/'
+  endif
+  let l:filePathLineColumn = l:filePath . ':' . line('.') . ':' . col('.')
+  let l:bookmarkNotes = input('Enter notes for bookmark ' . a:char . ': ', '')
   " clear
   redraw |echo 'Notes for bookmark ' . a:char . ': ' . l:bookmarkNotes
   let l:bookMarkInfo = { 'filePathLineColumn': l:filePathLineColumn, 'notes': l:bookmarkNotes }
+  echo bookMarkInfo
    let l:bookmarks[a:char] = l:bookMarkInfo
   call HandleWriteBookmarksJsonFile(l:bookmarks, a:selectedBookmarksFilePath)
   call bookmarks#printFormattedBookmarks(a:selectedBookmarksFilePath)

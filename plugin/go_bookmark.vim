@@ -1,4 +1,4 @@
-
+set nohidden
    augroup my_netrw_mappings
      " Target netrw filetype specifically
      autocmd FileType netrw call UnmapNetrwDefaultMappings()
