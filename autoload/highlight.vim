@@ -5,18 +5,16 @@ highlight BookMarkedLine cterm=NONE ctermbg=white ctermfg=black guibg=white guif
 
 function! highlight#AddSignToLineOnBufferOpen(mark, line) abort
   " call highlight#RemoveSignAndHighlight(a:mark)
-  
   let l:signDef = a:mark . '-bookmark'
   let l:signDefConfig = {'text': a:mark, 'texthl': 'BookMarkedLine' , 'linehl': 'BookMarkedLine'}
   "call sign_define(l:signDef, {'text': a:mark, 'texthl': 'BookMarkedLine' , 'linehl': 'BookMarkedLine'})
   call sign_define(l:signDef, l:signDefConfig)
-  echo json_encode(l:signDefConfig)
   let l:bufName = bufname()
-  echo l:bufName . 'bufName'
- "call sign_place(0, l:signDef, l:signDef,''   , {'lnum': a:line})
- "echo 'call sign_place(0,'.  l:signDef . ',' . l:signDef .', ' ."''" . "  , {'lnum':" .  a:line .'})'
- call sign_place(0, l:signDef, l:signDef, l:bufName  , {'lnum': a:line})
- echo 'call sign_place(0,'.  l:signDef . ',' . l:signDef .', '. l:bufName . "  , {'lnum':" .  a:line .'})'
+  "call sign_place(0, l:signDef, l:signDef,''   , {'lnum': a:line})
+  "────────────────────────────────────────────────────────────────────────────────
+  "────────────────── BUG: netrw buffer is not being highlighted ──────────────────
+  "────────────────────────────────────────────────────────────────────────────────
+  call sign_place(0, l:signDef, l:signDef, l:bufName  , {'lnum': a:line})
 endfunction
 
 function! highlight#AddSignToLine(mark) abort
