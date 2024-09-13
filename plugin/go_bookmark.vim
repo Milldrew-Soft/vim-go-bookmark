@@ -105,15 +105,13 @@ command! GoBookmarksList call GoBookmarksList()
 
 " 0-9 loop
 for char in range(0, 9)
-  let acutalChar = char
-  execute 'nnoremap gbbs'.acutalChar.' :call SetSelectedBook("'.acutalChar.'")<CR>'
-  execute 'nnoremap gb'.nr2char(char).' :call GoToBookMark("'.nr2char(char).'")<CR>'
-  execute 'nnoremap gB'.nr2char(char).' :call SetBookMark("'.nr2char(char).'")<CR>'
+  execute 'nnoremap gbbs' . char . ' :call SetSelectedBook("'.char.'")<CR>'
+  execute 'nnoremap gb' . char . ' :call GoToBookMark("'.char.'")<CR>'
+  execute 'nnoremap gB'. char.' :call SetBookMark("'.char.'")<CR>'
   " edit the bookmark of the selected book
   execute 'nnoremap gbbe'.char.' :call bookmarks#EditBookMarkNote("'.char.'")<CR>'
   " delete the bookmark of the selected book"
-  " execute 'nnoremap gbbd'.char.' :call bookmarks#DeleteBookMark("'.char.'")<CR>'
-  execute 'nnoremap gbbd'.nr2char(char).' :call bookmarks#DeleteBookMark("'.nr2char(char).'" )<CR>'
+  execute 'nnoremap gbbd'.char.' :call bookmarks#DeleteBookMark("'.char.'")<CR>'
 
 endfor
 
