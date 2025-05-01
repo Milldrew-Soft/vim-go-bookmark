@@ -90,10 +90,12 @@ function! GetBooks()
   try
   let books = json_decode(join(booksJson,''))
   catch
-    let books = {}
-    call rename(s:booksJsonFile, s:booksJsonFile . '.broken')
+    "let books = {}
+    echom "the books json file is having a JSON decode error go in and try to fix it manually"
+    echom booksJson
+    " call rename(s:booksJsonFile, s:booksJsonFile . '.broken')
     echo "Error reading books.json, renamed to books.json.broken"
-    call WriteBooks(books)
+    " call WriteBooks(books)
     echo "Created new blank books.json"
   endtry
   return books

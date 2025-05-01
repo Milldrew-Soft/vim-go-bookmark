@@ -126,4 +126,16 @@ function! bookmarks#DeleteBookMark(char ) abort
   endif
 endfunction
 
+function! bookmarks#ClearAllBookMarks() abort
+  let l:bookmarksFilePath = books#getSelectedBookFilePath()
+  let l:bookmarks = HandleGetGoBookmarksJsonFile(l:bookmarksFilePath)
+  let l:bookmarkNotes = input('Are you sure you want to delete all bookmarks? (y/n): ')
+  if l:bookmarkNotes == 'y'
+    call HandleWriteBookmarksJsonFile({}, l:bookmarksFilePath)
+    call bookmarks#printFormattedBookmarks(l:bookmarksFilePath)
+  else
+    echo 'All bookmarks were not deleted'
+  endif
+endfunction
+
 

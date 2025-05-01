@@ -142,6 +142,7 @@ nnoremap gbbE :call books#editNote(g:goBookmarkSelectedBook)<CR>
 nnoremap gbbd :echo 'delete bookmark fall through timeout'<CR>
 nnoremap gbbS :call books#chooseDefaultBook()<CR>
 nnoremap gbbl :call GoBookmarksList()<CR>
+nnoremap gbbc :call bookmarks#ClearAllBookMarks()<CR>
 
 "─────────────────── HIGH LIGHT BOOKMARKED LINES WHEN FILE IS OPENED ───────────────────
 augroup highlight_bookmarks
